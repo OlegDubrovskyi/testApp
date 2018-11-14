@@ -1,13 +1,15 @@
 "use strict";
 
 require("./helpers/setup");
+var expect = require("chai");
+
 
 var wd = require("wd"),
     _ = require('underscore'),
     serverConfigs = require('./helpers/appium-servers');
 
 describe("android webview", function () {
-  this.timeout(300000);
+  this.timeout(30000);
   var driver;
   var allPassed = true;
 
@@ -15,6 +17,7 @@ describe("android webview", function () {
     var serverConfig = process.env.npm_package_config_sauce ?
       serverConfigs.sauce : serverConfigs.local;
     driver = wd.promiseChainRemote(serverConfig);
+    console.log('serverConfig -----' , serverConfig);
     require("./helpers/logging").configure(driver);
 
     var desired = process.env.npm_package_config_sauce ?
@@ -44,7 +47,7 @@ describe("android webview", function () {
     allPassed = allPassed && this.currentTest.state === 'passed';
   });
 
-  it("should switch to webview", function () {
+  /*it("should switch to webview", function () {
     return driver
       .elementById('buttonStartWebviewCD')
         .click()
@@ -63,5 +66,18 @@ describe("android webview", function () {
         source.should.include('This is my way of saying hello');
         source.should.include('Appium User');
       });
-  });
+  });*/
+
+    it("should switch to webview", function () {
+        return driver
+            .elementById('buttonStartWebviewCD')
+            .click()
+            .waitForElementById('name_input', asserters.isDisplayed, 3000)
+            .clear()
+            .sendKeys('Appium User')
+            .sleep(2000)
+            .source().then(function (source) {
+                source.should.include('Appium User');
+            });
+    });
 });
